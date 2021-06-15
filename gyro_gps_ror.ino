@@ -51,11 +51,12 @@
 /* Konstanter ************************************************ */
 static const uint8_t RORpwm = 14; //D5 som udlæg output
 // static const int SCL_gyro = 5, SDA_gyro = 4;// Gyro: D2 (SCL), D1(SDA)
+
 static const int RXPin = 13, TXPin = 15;// GPS: D8 (RX), D7(TX)
 static const uint16_t GPSBaud = 9600;
 
 /* Globale variable ************************************************ */
-uint16_t BNO055_SAMPLERATE_DELAY_MS = 5;
+uint16_t BNO055_SAMPLERATE_DELAY_MS = 1;
 uint16_t WiFi_DELAY_MS = 100;
 static uint32_t t0, t0_main_loop = 0 ;
 static uint32_t t1, t1_main_loop, tWiFi = 0;
@@ -96,7 +97,7 @@ float ror = 0.0;
 
 /* Initialiserer moduler ******************************************* */
 TinyGPSPlus gps;
-SoftwareSerial ss(13,15);
+SoftwareSerial ss(RXPin,TXPin);
 
 using namespace websockets2_generic;
 WebsocketsClient client;
@@ -111,7 +112,7 @@ void setup()
     //Seriel forbindelse
     Serial.begin(115200);
     while (!Serial) { ;}//venter til vi har kontakt til serielporten
-    
+    Serial1.begin(115200);
     //kommunikation mellem GPS og ESP8266
     ss.begin(GPSBaud);
     
@@ -146,6 +147,7 @@ void loop()
         if (gps.location.isValid()){
             if(i%9==0 ){//Primitiv netværks begrænsning
             //gemmer positionsoplysninger
+            Serial1.println("Virker serial 1???????????????");
             i=0;
             brGps = gps.location.lat();
             lgGps = gps.location.lng();
